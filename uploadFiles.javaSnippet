@@ -1,0 +1,20 @@
+private void uploadFiles (RoutingContext routingContext) {
+
+    Set<FileUpload> fileUploadSet = routingContext.fileUploads();
+
+    Iterator<FileUpload> fileUploadIterator = fileUploadSet.iterator();
+    while (fileUploadIterator.hasNext()) {
+        FileUpload fileUpload = fileUploadIterator.next();
+
+        vertx.fileSystem().copy(fileUpload.uploadedFileName(), "/home/vagrant/TESTTEST.TXT", res -> {
+            if (res.succeeded()) {
+                LOG.info("COPY GOOD");
+            } else {
+                // Something went wrong
+            }
+        });
+        routingContext.response().setStatusCode(ConstantApp.STATUS_CODE_OK)
+                .putHeader(ConstantApp.CONTENT_TYPE, ConstantApp.APPLICATION_JSON_CHARSET_UTF_8)
+                .end(Json.encodePrettily(new JsonObject().put("uploaded_file_name", "test.csv")));
+    }
+}
